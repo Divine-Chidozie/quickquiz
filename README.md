@@ -1,16 +1,36 @@
-# React + Vite
+# CBT Question & Answer App
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A **Computer-Based Test (CBT) App** built with **ReactJS**. This app allows instructors to create multiple-choice questions and students to take tests with **instant grading** and **live score updates**.
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## Features
 
-## React Compiler
+### Instructor Page
+- Create questions with **4 options**.
+- Mark the **correct answer** for each question.
+- Questions are saved in **localStorage** for immediate access.
+- View all created questions with correct answers highlighted.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+### Student Page
+- View all questions created by the instructor.
+- Select answers using **clickable buttons**.
+- **Instant grading**: correct answers show ✅, wrong answers show ❌.
+- **Live score** updates as questions are answered.
+- Clean and responsive UI.
 
-## Expanding the ESLint configuration
+---
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+## Technologies Used
+- **ReactJS** (Vite) for frontend
+- **JavaScript** (ES6+)
+- **HTML & CSS**
+- **LocalStorage** for storing questions
+
+---
+
+## Getting Started
+
+### 1. Clone the repository
+```bash
+git clone https://github.com/Divine-Chidozie/quickquiz
