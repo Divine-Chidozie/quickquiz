@@ -1,34 +1,66 @@
 import { useState, useEffect } from "react";
 
+// Helper function to shuffle an array
+const shuffleArray = (array) => {
+  return [...array].sort(() => Math.random() - 0.5);
+};
+
 function StudentPage() {
   const [questions, setQuestions] = useState([]);
   const [answers, setAnswers] = useState({});
   const [score, setScore] = useState(0);
+  const [submitted, setSubmitted] = useState(false);
 
   useEffect(() => {
     try {
       const saved = JSON.parse(localStorage.getItem("questions")) || [];
       const validQuestions = saved.filter((q) => q && q.question && q.options);
-      setQuestions(validQuestions);
+
+      // Shuffle questions and their options
+      const shuffledQuestions = shuffleArray(
+        validQuestions.map((q) => ({
+          ...q,
+          options: shuffleArray(q.options),
+        }))
+      );
+
+      setQuestions(shuffledQuestions);
     } catch {
       setQuestions([]);
     }
   }, []);
 
-  const handleAnswer = (questionId, selectedOption, correctAnswer) => {
-    setAnswers((prev) => ({ ...prev, [questionId]: selectedOption }));
+  const handleAnswer = (questionId, selectedOption) => {
+    if (!submitted) {
+      setAnswers((prev) => ({ ...prev, [questionId]: selectedOption }));
+    }
+  };
 
-    setScore((prev) => {
-      const prevAnswer = answers[questionId];
-      let newScore = prev;
+  const handleSubmit = () => {
+    let newScore = 0;
 
-      if (selectedOption === correctAnswer && prevAnswer !== correctAnswer)
+    questions.forEach((q) => {
+      if (answers[q.id] === q.correctAnswer) {
         newScore += 1;
-      if (prevAnswer === correctAnswer && selectedOption !== correctAnswer)
-        newScore -= 1;
-
-      return newScore;
+      }
     });
+
+    setScore(newScore);
+    setSubmitted(true);
+  };
+
+  const handleRetake = () => {
+    // Re-shuffle questions and reset everything
+    const reshuffled = shuffleArray(
+      questions.map((q) => ({
+        ...q,
+        options: shuffleArray(q.options),
+      }))
+    );
+    setQuestions(reshuffled);
+    setAnswers({});
+    setScore(0);
+    setSubmitted(false);
   };
 
   return (
@@ -63,16 +95,21 @@ function StudentPage() {
                 {q.options.map((opt, index) => {
                   const isSelected = answers[q.id] === opt;
                   const isCorrect = opt === q.correctAnswer;
-                  const backgroundColor = isSelected
-                    ? isCorrect
-                      ? "#d4edda"
-                      : "#f8d7da"
-                    : "#f0f0f0";
+
+                  let backgroundColor = "#f0f0f0";
+                  if (submitted) {
+                    if (isSelected && isCorrect)
+                      backgroundColor = "#d4edda"; // green
+                    else if (isSelected && !isCorrect)
+                      backgroundColor = "#f8d7da"; // red
+                  } else if (isSelected) {
+                    backgroundColor = "#cce5ff"; // blue before submit
+                  }
 
                   return (
                     <button
                       key={index}
-                      onClick={() => handleAnswer(q.id, opt, q.correctAnswer)}
+                      onClick={() => handleAnswer(q.id, opt)}
                       style={{
                         display: "block",
                         width: "100%",
@@ -81,14 +118,15 @@ function StudentPage() {
                         marginBottom: "5px",
                         borderRadius: "5px",
                         border: "1px solid #ccc",
-                        backgroundColor: backgroundColor,
+                        backgroundColor,
                         cursor: "pointer",
                         transition: "background-color 0.3s",
                       }}
                     >
-                      {opt}{" "}
-                      {isSelected &&
-                        (isCorrect ? ":Correct Answer ✅" : ":Failed ❌")}
+                      {opt}
+                      {submitted &&
+                        isSelected &&
+                        (isCorrect ? " ✅ Correct" : " ❌ Wrong")}
                     </button>
                   );
                 })}
@@ -96,11 +134,42 @@ function StudentPage() {
             </div>
           ))}
 
-          <div style={{ marginTop: "20px" }}>
-            <h3>
-              Total Score: {score} / {questions.length}
-            </h3>
-          </div>
+          {!submitted ? (
+            <button
+              onClick={handleSubmit}
+              style={{
+                padding: "10px 20px",
+                backgroundColor: "green",
+                color: "white",
+                border: "none",
+                borderRadius: "5px",
+                cursor: "pointer",
+                marginTop: "20px",
+              }}
+            >
+              Submit Answers
+            </button>
+          ) : (
+            <div style={{ marginTop: "20px" }}>
+              <h3>
+                Your Score: {score} / {questions.length}
+              </h3>
+              <button
+                onClick={handleRetake}
+                style={{
+                  padding: "10px 20px",
+                  backgroundColor: "#007bff",
+                  color: "white",
+                  border: "none",
+                  borderRadius: "5px",
+                  cursor: "pointer",
+                  marginTop: "10px",
+                }}
+              >
+                Retake Quiz
+              </button>
+            </div>
+          )}
         </div>
       )}
     </div>
