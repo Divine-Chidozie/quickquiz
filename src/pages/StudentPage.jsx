@@ -76,7 +76,7 @@ function StudentPage() {
       {questions.length === 0 ? (
         <p>
           No questions available yet. Please wait for your instructor to add
-          them.
+          them!.
         </p>
       ) : (
         <div>
